@@ -134,7 +134,7 @@ body {
     text-align: center;
 }
 
-body > p {
+p {
     position: fixed;
     top: 29%;
     left: 50%;
@@ -179,10 +179,12 @@ body > p {
             <div class="ring"></div>
         </div>
     </div>
-    <div class="background-final" id="backgroundFinal"></div>
-    <div class="profile" id="profile"><img src="./assets/img/width_600.jpeg" alt="Profile Image"></div>
-    <h1 class="name">🐺Δrt | )a §ak🌸</h1>
-    <p>Software developer, proactive and detail-oriented, with a solid foundation in Python, HTML, CSS, JavaScript, and Git. Enthusiastic about technology, innovation, and artificial intelligence, combining creativity and critical thinking, reinforced by academic research experience. Easily adaptable to different contexts, standing out for empathy, commitment, and a continuous learning mentality. I enjoy working in collaborative environments and seek to create inclusive, scalable, and people-centered solutions that generate a positive and real impact on society.</p>
+    <section class="hidden-after-scroll">
+        <div class="background-final" id="backgroundFinal"></div>
+        <div class="profile" id="profile"><img src="./assets/img/width_600.jpeg" alt="Profile Image"></div>
+        <h1 class="name">🐺Δrt | )a §ak🌸</h1>
+        <p>Software developer, proactive and detail-oriented, with a solid foundation in Python, HTML, CSS, JavaScript, and Git. Enthusiastic about technology, innovation, and artificial intelligence, combining creativity and critical thinking, reinforced by academic research experience. Easily adaptable to different contexts, standing out for empathy, commitment, and a continuous learning mentality. I enjoy working in collaborative environments and seek to create inclusive, scalable, and people-centered solutions that generate a positive and real impact on society.</p>
+    </section>
     <script>
         // Dynamically adjust body height based on content
         document.body.style.height = `${window.innerHeight * 3}px`;
@@ -227,10 +229,34 @@ body > p {
                 ring.style.opacity = ringOpacity;
                 ring.style.filter = `blur(${ringBlur}px)`;
             });
+            // Selecciona el elemento que quieres ocultar/mostrar
+            const hiddenSection = document.querySelector('.hidden-after-scroll');
+            const showAfterScroll = () => {
+                hiddenSection.style.opacity = '1';
+                hiddenSection.style.pointerEvents = 'auto';
+                hiddenSection.style.transition = 'opacity 0.5s';
+            };
+            const hideBeforeScroll = () => {
+                hiddenSection.style.opacity = '0';
+                hiddenSection.style.pointerEvents = 'none';
+                hiddenSection.style.transition = 'opacity 0.5s';
+            };
 
-            // Mostrar fondo negro al final
-            const backgroundFinal = document.getElementById('backgroundFinal');
-            backgroundFinal.style.opacity = scrollPosition > maxScroll ? 1 : 0;
+            // Inicialmente oculto
+            hideBeforeScroll();
+
+            window.addEventListener('scroll', () => {
+                const scrollPosition = window.scrollY;
+                // Ajusta el umbral según tu animación
+                if (scrollPosition > 400) {
+                    showAfterScroll();
+                } else {
+                    hideBeforeScroll();
+                }
+                // Mostrar fondo negro al final
+                const backgroundFinal = document.getElementById('backgroundFinal');
+                backgroundFinal.style.opacity = scrollPosition > maxScroll ? 1 : 0;
+            });
         });
     </script>
 </body>
