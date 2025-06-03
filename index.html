@@ -96,6 +96,60 @@ body {
     z-index: 20;
     pointer-events: none;
 }
+.profile {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.name {
+    position: fixed;
+    top: 23%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    color: #EBEBFF;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 2.2vw;
+    text-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF;
+    margin: 0;
+    white-space: nowrap;
+    text-align: center;
+}
+
+body > p {
+    position: fixed;
+    top: 29%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    color: #EBEBFF;
+    background: rgba(10,10,20,0.7);
+    padding: 1.2em 2em;
+    border-radius: 1em;
+    font-size: 1.1vw;
+    max-width: 700px;
+    width: 80vw;
+    box-shadow: 0 0 10px #00FFFF44, 0 0 20px #FF00FF22;
+    text-align: center;
+}
 
 @media (max-width: 1250px) {
     #centerText {
@@ -126,6 +180,9 @@ body {
         </div>
     </div>
     <div class="background-final" id="backgroundFinal"></div>
+    <div class="profile" id="profile"><img src="./assets/img/width_600.jpeg" alt="Profile Image"></div>
+    <h1 class="name">🐺Δrt | )a §ak🌸</h1>
+    <p>Software developer, proactive and detail-oriented, with a solid foundation in Python, HTML, CSS, JavaScript, and Git. Enthusiastic about technology, innovation, and artificial intelligence, combining creativity and critical thinking, reinforced by academic research experience. Easily adaptable to different contexts, standing out for empathy, commitment, and a continuous learning mentality. I enjoy working in collaborative environments and seek to create inclusive, scalable, and people-centered solutions that generate a positive and real impact on society.</p>
     <script>
         // Dynamically adjust body height based on content
         document.body.style.height = `${window.innerHeight * 3}px`;
