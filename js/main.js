@@ -5,9 +5,9 @@ window.addEventListener('resize', () => {
 });
 const rings = document.querySelectorAll('.ring');
 const ringsCount = rings.length;
-const maxScroll = 700; // Ajusta para controlar el efecto
-const maxScale = 7;    // Escala máxima de los rings
-const maxBlur = 17;    // Difuminado máximo
+const maxScroll = 400; // Ajusta para controlar el efecto
+const maxScale = 8;    // Escala máxima de los rings
+const maxBlur = 30;    // Difuminado máximo
 
 window.addEventListener('scroll', () => {
     const scrollPosition = window.scrollY;
