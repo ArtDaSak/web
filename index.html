@@ -5,164 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐺Δrt | )a §ak🌸</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: auto;
+            overflow-x: hidden;
+        }
+
+        .tunnel {
+            background-color: #0A0A0A;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 700px;
+            overflow: hidden;
+        }
+
+        .rings {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-style: preserve-3d;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ring {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 2px solid #00FFFF;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00FFFF;
+            opacity: 1;
+            transition: opacity 0.5s, filter 0.5s;
+            filter: blur(0px);
+        }
+
+        .ring:nth-child(3) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
+        .ring:nth-child(4) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
+        .ring:nth-child(5) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
+        .ring:nth-child(6) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
+        .ring:nth-child(7) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
+        .ring:nth-child(8) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
+        .ring:nth-child(9) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
+        .ring:nth-child(10) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
+
+        .center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            color: #EBEBFF;
+            font-size: 2.7vw;
+            font-family: "Orbitron", Arial, sans-serif;
+            text-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF;
+            opacity: 1;
+            pointer-events: none;
+            transition: opacity 0.5s, transform 0.5s;
+            z-index: 10;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        #centerText::before {
+            content: "Press SPACE to START";
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .background-final {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url(../assets/img/background.jpg) no-repeat center center fixed;
+            background-size: cover;
+            background-color: #0A0A0A;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .profile {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .name {
+            position: fixed;
+            top: 23%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            color: #EBEBFF;
+            font-family: "Orbitron", Arial, sans-serif;
+            font-size: 2.2vw;
+            text-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF;
+            margin: 0;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        p {
+            position: fixed;
+            top: 29%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            color: #EBEBFF;
+            background: rgba(10,10,20,0.7);
+            padding: 1.2em 2em;
+            border-radius: 1em;
+            font-size: 1.1vw;
+            max-width: 700px;
+            width: 80vw;
+            box-shadow: 0 0 10px #00FFFF44, 0 0 20px #FF00FF22;
+            text-align: center;
+        }
+
+        .hidden-after-scroll {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        @media (max-width: 1250px) {
+            #centerText {
+                font-size: 5vw;
+                text-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF;
+            }
+            #centerText::before {
+                content: "Continúe desplazando";
+                font-weight: bold;
+                display: inline-block;
+            }
+        }
+    </style>
 </head>
-<style>
-
-body {
-    margin: 0;
-    height: auto;
-}
-
-.tunnel {
-    background-color: #0A0A0A;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    perspective: 700px;
-    overflow: hidden;
-}
-
-.rings {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform-style: preserve-3d;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ring {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    height: 200px;
-    border: 2px solid #00FFFF;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #00FFFF;
-    opacity: 1;
-    transition: opacity 0.5s, filter 0.5s;
-    filter: blur(0px);
-}
-
-.ring:nth-child(3) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
-.ring:nth-child(4) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
-.ring:nth-child(5) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
-.ring:nth-child(6) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
-.ring:nth-child(7) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
-.ring:nth-child(8) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
-.ring:nth-child(9) { border-color: #FF00FF; box-shadow: 0 0 10px #FF00FF; }
-.ring:nth-child(10) { border-color: #9223FE; box-shadow: 0 0 10px #9223FE; }
-
-.center-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(1);
-    color: #EBEBFF;
-    font-size: 2.7vw;
-    font-family: "Orbitron", Arial, sans-serif;
-    text-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF;
-    opacity: 1;
-    pointer-events: none;
-    transition: opacity 0.5s, transform 0.5s;
-    z-index: 10;
-    user-select: none;
-    white-space: nowrap;
-}
-
-#centerText::before {
-    content: "Press SPACE to START";
-    font-weight: bold;
-    display: inline-block;
-}
-
-.background-final {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url(../assets/img/background.jpg) no-repeat center center fixed;
-    background-size: cover;
-    background-color: #0A0A0A;
-    opacity: 0;
-    transition: opacity 0.5s;
-    z-index: 20;
-    pointer-events: none;
-}
-.profile {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 30;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF;
-    background: #111;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.profile img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.name {
-    position: fixed;
-    top: 23%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 30;
-    color: #EBEBFF;
-    font-family: "Orbitron", Arial, sans-serif;
-    font-size: 2.2vw;
-    text-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF;
-    margin: 0;
-    white-space: nowrap;
-    text-align: center;
-}
-
-p {
-    position: fixed;
-    top: 29%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 30;
-    color: #EBEBFF;
-    background: rgba(10,10,20,0.7);
-    padding: 1.2em 2em;
-    border-radius: 1em;
-    font-size: 1.1vw;
-    max-width: 700px;
-    width: 80vw;
-    box-shadow: 0 0 10px #00FFFF44, 0 0 20px #FF00FF22;
-    text-align: center;
-}
-
-@media (max-width: 1250px) {
-    #centerText {
-        font-size: 5vw;
-        text-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF;
-    }
-    #centerText::before {
-        content: "Continúe desplazando";
-        font-weight: bold;
-        display: inline-block;
-    }
-}
-</style>
 <body>
     <div class="tunnel">
         <div class="rings">
@@ -186,36 +194,37 @@ p {
         <p>Software developer, proactive and detail-oriented, with a solid foundation in Python, HTML, CSS, JavaScript, and Git. Enthusiastic about technology, innovation, and artificial intelligence, combining creativity and critical thinking, reinforced by academic research experience. Easily adaptable to different contexts, standing out for empathy, commitment, and a continuous learning mentality. I enjoy working in collaborative environments and seek to create inclusive, scalable, and people-centered solutions that generate a positive and real impact on society.</p>
     </section>
     <script>
-        // Dynamically adjust body height based on content
+        // Ajustar dinámicamente la altura del body
         document.body.style.height = `${window.innerHeight * 3}px`;
         window.addEventListener('resize', () => {
             document.body.style.height = `${window.innerHeight * 3}px`;
         });
+
         const rings = document.querySelectorAll('.ring');
         const ringsCount = rings.length;
-        const maxScroll = 400; // Ajusta para controlar el efecto
-        const maxScale = 8;    // Escala máxima de los rings
-        const maxBlur = 30;    // Difuminado máximo
+        const maxScroll = 400;
+        const maxScale = 8;
+        const maxBlur = 30;
+        const hiddenSection = document.querySelector('.hidden-after-scroll');
+        const backgroundFinal = document.getElementById('backgroundFinal');
+        const text = document.getElementById('centerText');
 
-        window.addEventListener('scroll', () => {
+        function updateAnimations() {
             const scrollPosition = window.scrollY;
             const zOffset = scrollPosition / 2;
             document.querySelector('.rings').style.transform = `translate(-50%, -50%) translateZ(${zOffset}px)`;
 
-            // Desvanecer y escalar el texto central
-            const text = document.getElementById('centerText');
+            // Animación del texto central
             let progress = Math.min(scrollPosition / 200, 1);
             let scale = 1 - 0.5 * progress;
             let opacity = 1 - progress;
             text.style.opacity = opacity;
             text.style.transform = `translate(-50%, -50%) scale(${scale})`;
 
-            // Efecto en los rings con blur modificado
+            // Animación de los anillos
             rings.forEach((ring, i) => {
                 const baseZ = -100 * (i + 1);
                 let ringProgress = Math.min(scrollPosition / (maxScroll - i * 20), 1);
-
-                // Blur solo empieza después del 50% de progreso y es 25% más lento
                 let blurProgress = 0;
                 if (ringProgress > 0.5) {
                     blurProgress = ((ringProgress - 0.5) / 0.5) * 0.75;
@@ -224,40 +233,31 @@ p {
                 let ringScale = 1.5 + (maxScale - 1.5) * ringProgress;
                 let ringOpacity = 1 - ringProgress;
                 let ringBlur = maxBlur * blurProgress;
-
                 ring.style.transform = `translate(-50%, -50%) translateZ(${baseZ}px) scale(${ringScale})`;
                 ring.style.opacity = ringOpacity;
                 ring.style.filter = `blur(${ringBlur}px)`;
             });
-            // Selecciona el elemento que quieres ocultar/mostrar
-            const hiddenSection = document.querySelector('.hidden-after-scroll');
-            const showAfterScroll = () => {
+
+            // Mostrar/ocultar sección
+            if (scrollPosition > 400) {
                 hiddenSection.style.opacity = '1';
                 hiddenSection.style.pointerEvents = 'auto';
-                hiddenSection.style.transition = 'opacity 0.5s';
-            };
-            const hideBeforeScroll = () => {
+            } else {
                 hiddenSection.style.opacity = '0';
                 hiddenSection.style.pointerEvents = 'none';
-                hiddenSection.style.transition = 'opacity 0.5s';
-            };
+            }
 
-            // Inicialmente oculto
-            hideBeforeScroll();
+            // Transición del fondo
+            backgroundFinal.style.opacity = scrollPosition > maxScroll ? 1 : 0;
+        }
 
-            window.addEventListener('scroll', () => {
-                const scrollPosition = window.scrollY;
-                // Ajusta el umbral según tu animación
-                if (scrollPosition > 400) {
-                    showAfterScroll();
-                } else {
-                    hideBeforeScroll();
-                }
-                // Mostrar fondo negro al final
-                const backgroundFinal = document.getElementById('backgroundFinal');
-                backgroundFinal.style.opacity = scrollPosition > maxScroll ? 1 : 0;
-            });
+        // Usar requestAnimationFrame para animaciones fluidas
+        window.addEventListener('scroll', () => {
+            requestAnimationFrame(updateAnimations);
         });
+
+        // Ejecutar la función una vez al cargar para establecer el estado inicial
+        updateAnimations();
     </script>
 </body>
 </html>
