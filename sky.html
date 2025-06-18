@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cielo Nocturno con Estrellas Fugaces</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+        .sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #5B3A6F 0%, #2A1B3D 100%);
+            overflow: hidden;
+            z-index: 1;
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            aspect-ratio: 1/1;
+            opacity: 0;
+            animation: twinkle 1.5s infinite alternate;
+            box-shadow: 0 0 6px 2px #fff8;
+        }
+        .shooting-star {
+            position: absolute;
+            width: 60px;
+            height: 1.2px;
+            background: linear-gradient(90deg, #fff 60%, rgba(255,255,255,0.0) 100%);
+            opacity: 0.92;
+            pointer-events: none;
+            z-index: 2;
+            transform-origin: left center;
+            filter: blur(0.5px) brightness(1.2);
+            box-shadow: 0 0 4px 1px #fff8, 0 0 12px 3px #a7c7ff44;
+            animation: shooting 1.1s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+        .shooting-star::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -30px;
+            width: 50px;
+            height: 3px;
+            background: radial-gradient(ellipse at left, rgba(180,200,255,0.45) 0%, transparent 80%);
+            transform: translateY(-50%) scaleY(0.45) scaleX(1.2);
+            filter: blur(2px);
+            animation: tailFade 1.1s cubic-bezier(0.4,0,0.2,1) forwards;
+            z-index: -1;
+        }
+        .shooting-star::after {
+            content: "";
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.7);
+            width: 5px;
+            height: 5px;
+            background: radial-gradient(circle, #fff 70%, #a7c7ff88 100%);
+            border-radius: 50%;
+            opacity: 1;
+            box-shadow: 0 0 6px 2px #fff, 0 0 16px 6px #a7c7ff55;
+            animation: tipShrink 1.1s cubic-bezier(0.4,0,0.2,1) forwards;
+            z-index: 3;
+        }
+        @keyframes tipShrink {
+            0% {
+                opacity: 1;
+                transform: translateY(-50%) scaleX(1) scaleY(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50%) scaleX(0.3) scaleY(0.3);
+            }
+        }
+        @keyframes twinkle {
+            from { opacity: 0.2; }
+            to { opacity: 1; }
+        }
+        @keyframes shooting {
+            0% {
+                opacity: 1;
+                transform: rotate(var(--angle)) scaleX(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) rotate(var(--angle)) scaleX(0.7);
+            }
+        }
+        @keyframes tailFade {
+            0% {
+                opacity: 1;
+                transform: translateY(-50%) scaleY(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50%) scaleY(0.3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sky"></div>
+    <script>
+        const MAX_STARS = 1200;
+        let stars = [];
+
+        function createStars(numStars) {
+            const sky = document.querySelector('.sky');
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 1.5}s`;
+                fragment.appendChild(star);
+                stars.push(star);
+            }
+            sky.appendChild(fragment);
+            enforceStarLimit();
+        }
+
+        function createStarsAt(x, y, numStars) {
+            const sky = document.querySelector('.sky');
+            const rect = sky.getBoundingClientRect();
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                const offsetX = (Math.random() - 0.5) * 120;
+                const offsetY = (Math.random() - 0.5) * 120;
+                const left = ((x - rect.left + offsetX) / rect.width) * 100;
+                const top = ((y - rect.top + offsetY) / rect.height) * 100;
+                star.style.left = `${left}%`;
+                star.style.top = `${top}%`;
+                star.style.animationDelay = `${Math.random() * 1.5}s`;
+                fragment.appendChild(star);
+                stars.push(star);
+            }
+            sky.appendChild(fragment);
+            enforceStarLimit();
+        }
+
+        function enforceStarLimit() {
+            while (stars.length > MAX_STARS) {
+                const oldStar = stars.shift();
+                if (oldStar && oldStar.parentNode) {
+                    oldStar.parentNode.removeChild(oldStar);
+                }
+            }
+        }
+
+        function createShootingStar() {
+            const sky = document.querySelector('.sky');
+            const rect = sky.getBoundingClientRect();
+            const startX = Math.random() * rect.width * 0.8 + rect.width * 0.1;
+            const startY = Math.random() * rect.height * 0.6 + rect.height * 0.05;
+            const dx = Math.random() * 200 + 100;
+            const dy = dx * (0.4 + Math.random() * 0.4);
+            const angleRad = Math.atan2(dy, dx);
+            const angleDeg = angleRad * 180 / Math.PI;
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.left = `${startX}px`;
+            shootingStar.style.top = `${startY}px`;
+            shootingStar.style.setProperty('--dx', `${dx}px`);
+            shootingStar.style.setProperty('--dy', `${dy}px`);
+            shootingStar.style.setProperty('--angle', `${angleDeg}deg`);
+            sky.appendChild(shootingStar);
+            shootingStar.addEventListener('animationend', () => {
+                if (shootingStar.parentNode) {
+                    shootingStar.parentNode.removeChild(shootingStar);
+                }
+            });
+        }
+
+        createStars(700);
+
+        document.querySelector('.sky').addEventListener('click', function (e) {
+            createStarsAt(e.clientX, e.clientY, 7);
+        });
+
+        setInterval(() => {
+            createShootingStar();
+        }, 7000);
+
+        setInterval(() => {
+            createShootingStar();
+            createShootingStar();
+        }, 27000);
+    </script>
+</body>
+</html>
