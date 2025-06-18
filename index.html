@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,12 +73,31 @@
             z-index: 10;
             user-select: none;
             white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        #centerText::before {
-            content: "Press SPACE to START";
+        .start-text {
             font-weight: bold;
-            display: inline-block;
+            display: block;
+            white-space: pre;
+            text-align: center;
+            font-size: 2.7vw;
+            color: #EBEBFF;
+            text-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF;
+        }
+
+        .continue-text {
+            display: block;
+            font-weight: bold;
+            white-space: pre;
+            text-align: center;
+            font-size: 0.9vw;
+            color: #EBEBFF;
+            text-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF;
+            margin-top: -0.5em;
+            opacity: 0.97;
         }
 
         .background-final {
@@ -174,7 +193,10 @@
 <body>
     <div class="tunnel">
         <div class="rings">
-            <div class="center-text" id="centerText"></div>
+            <div class="center-text" id="centerText">
+                <span class="start-text">Press SPACE to START</span>
+                <span class="continue-text">Or Continue SCROLLING</span>
+            </div>
             <div class="ring"></div>
             <div class="ring"></div>
             <div class="ring"></div>
