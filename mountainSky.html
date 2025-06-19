@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sky</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+        .sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #5B3A6F 0%, #2A1B3D 100%);
+            overflow: hidden;
+            z-index: 1;
+        }
+        .star {
+            position: absolute;
+            background-color: #EBEAE1;
+            border-radius: 50%;
+            aspect-ratio: 1/1;
+            opacity: 0;
+            animation: twinkle 1.5s infinite alternate, glow 2s infinite alternate;
+            box-shadow: 0 0 6px 2px #fff8;
+        }
+        .shooting-star {
+            position: absolute;
+            width: 80px;
+            height: 1.5px;
+            background: linear-gradient(90deg, #EBEAE1 60%, rgba(255,255,255,0.0) 100%);
+            opacity: 0.95;
+            pointer-events: none;
+            z-index: 2;
+            transform-origin: left center;
+            filter: blur(0.6px) brightness(1.3);
+            box-shadow: 0 0 5px 1.5px #fff8, 0 0 15px 4px #a7c7ff44;
+            animation: shooting 1.5s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+        .shooting-star::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -50px;
+            width: 80px;
+            height: 5px;
+            background: radial-gradient(ellipse at left, rgba(180,200,255,0.6) 0%, transparent 80%);
+            transform: translateY(-50%) scaleY(0.6) scaleX(1.4);
+            filter: blur(3px);
+            animation: tailFade 1.5s cubic-bezier(0.4,0,0.2,1) forwards;
+            z-index: -1;
+        }
+        .shooting-star::after {
+            content: "";
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.8);
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #fff 70%, #a7c7ff88 100%);
+            border-radius: 50%;
+            opacity: 1;
+            box-shadow: 0 0 8px 3px #fff, 0 0 20px 8px #a7c7ff55;
+            animation: tipShrink 1.5s cubic-bezier(0.4,0,0.2,1) forwards;
+            z-index: 3;
+        }
+        @keyframes tipShrink {
+            0% {
+                opacity: 1;
+                transform: translateY(-50%) scaleX(1) scaleY(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50%) scaleX(0.3) scaleY(0.3);
+            }
+        }
+        @keyframes twinkle {
+            from { opacity: 0.2; }
+            to { opacity: 1; }
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 6px 2px #fff8; }
+            to { box-shadow: 0 0 12px 4px #fff8; }
+        }
+        @keyframes shooting {
+            0% {
+                opacity: 1;
+                transform: rotate(var(--angle)) scaleX(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) rotate(var(--angle)) scaleX(0.7);
+            }
+        }
+        @keyframes tailFade {
+            0% {
+                opacity: 1;
+                transform: translateY(-50%) scaleY(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50%) scaleY(0.3);
+            }
+        }
+        /* Synthwave terrain styles */
+        .terrain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2;
+        }
+        #terrain-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="sky"></div>
+    <!-- Synthwave Sun & Mountains -->
+    <div class="terrain">
+        <canvas id="terrain-canvas"></canvas>
+    </div>
+    <script>
+        // --- STARS & SHOOTING STARS CODE (NO CAMBIOS) ---
+        const MAX_STARS = 700;
+        let stars = [];
+        let lastClickX = window.innerWidth / 2;
+        let lastClickY = window.innerHeight / 2;
+
+        function createStars(numStars) {
+            const sky = document.querySelector('.sky');
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 1.5}s`;
+                fragment.appendChild(star);
+                stars.push(star);
+            }
+            sky.appendChild(fragment);
+            enforceStarLimit();
+        }
+
+        function createStarsAt(x, y, numStars) {
+            const sky = document.querySelector('.sky');
+            const rect = sky.getBoundingClientRect();
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                const offsetX = (Math.random() - 0.5) * 150;
+                const offsetY = (Math.random() - 0.5) * 150;
+                const left = ((x - rect.left + offsetX) / rect.width) * 100;
+                const top = ((y - rect.top + offsetY) / rect.height) * 100;
+                star.style.left = `${left}%`;
+                star.style.top = `${top}%`;
+                star.style.animationDelay = `${Math.random() * 1.5}s`;
+                fragment.appendChild(star);
+                stars.push(star);
+            }
+            sky.appendChild(fragment);
+            enforceStarLimit();
+        }
+
+        function enforceStarLimit() {
+            while (stars.length > MAX_STARS) {
+                const oldStar = stars.shift();
+                if (oldStar && oldStar.parentNode) {
+                    oldStar.parentNode.removeChild(oldStar);
+                }
+            }
+        }
+
+        function createShootingStar(x, y) {
+            const sky = document.querySelector('.sky');
+            const rect = sky.getBoundingClientRect();
+            
+            let startX, startY;
+            if (x && y) {
+                startX = x - rect.left;
+                startY = y - rect.top;
+            } else {
+                startX = Math.max(50, lastClickX - 100);
+                startY = Math.max(50, lastClickY - 50);
+            }
+            
+            const dx = Math.random() * 300 + 200;
+            const dy = dx * (0.3 + Math.random() * 0.3);
+            const angleRad = Math.atan2(dy, dx);
+            const angleDeg = angleRad * 180 / Math.PI;
+            
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.left = `${startX}px`;
+            shootingStar.style.top = `${startY}px`;
+            shootingStar.style.setProperty('--dx', `${dx}px`);
+            shootingStar.style.setProperty('--dy', `${dy}px`);
+            shootingStar.style.setProperty('--angle', `${angleDeg}deg`);
+            sky.appendChild(shootingStar);
+            
+            shootingStar.addEventListener('animationend', () => {
+                if (shootingStar.parentNode) {
+                    shootingStar.parentNode.removeChild(shootingStar);
+                }
+            });
+        }
+
+        createStars(270);
+
+        document.querySelector('.sky').addEventListener('click', function (e) {
+            lastClickX = e.clientX;
+            lastClickY = e.clientY;
+            createStarsAt(e.clientX, e.clientY, 17);
+            createShootingStar(e.clientX, e.clientY);
+        });
+
+        setInterval(() => {
+            createShootingStar();
+        }, 7000);
+
+        setInterval(() => {
+            createShootingStar();
+            createShootingStar();
+        }, 27000);
+
+        // --- SYNTHWAVE SUN & MOUNTAINS CODE ---
+        const canvas = document.getElementById('terrain-canvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.querySelector('.terrain');
+
+        let width = container.clientWidth;
+        let height = container.clientHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        // Variables del mouse
+        let mouseX = width / 2;
+        let mouseY = height / 2;
+        let targetMouseX = mouseX;
+        let targetMouseY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+            targetMouseX = e.clientX;
+            targetMouseY = e.clientY;
+        });
+
+        let time = 0;
+
+        // Configuración de montañas en wireframe
+        const mountainLayers = [
+            {
+                mountains: [
+                    { cx: 0.1, cy: 0.85, width: 0.25, height: 0.15, detail: 32, color: '#ff00ff', glow: '#ff44ff' },
+                    { cx: 0.3, cy: 0.75, width: 0.3, height: 0.25, detail: 40, color: '#ff0080', glow: '#ff4499' },
+                    { cx: 0.55, cy: 0.65, width: 0.4, height: 0.35, detail: 48, color: '#ff0040', glow: '#ff4477' },
+                    { cx: 0.8, cy: 0.8, width: 0.28, height: 0.2, detail: 36, color: '#ff0060', glow: '#ff4488' }
+                ],
+                wireSpacing: 0.015,
+                fleeStrength: 0.4
+            },
+            {
+                mountains: [
+                    { cx: 0.15, cy: 0.9, width: 0.2, height: 0.1, detail: 28, color: '#0080ff', glow: '#4499ff' },
+                    { cx: 0.4, cy: 0.82, width: 0.35, height: 0.18, detail: 44, color: '#0060ff', glow: '#4488ff' },
+                    { cx: 0.7, cy: 0.88, width: 0.25, height: 0.12, detail: 32, color: '#0040ff', glow: '#4477ff' }
+                ],
+                wireSpacing: 0.02,
+                fleeStrength: 0.3
+            },
+            {
+                mountains: [
+                    { cx: 0.2, cy: 0.95, width: 0.15, height: 0.05, detail: 24, color: '#00ffff', glow: '#44ffff' },
+                    { cx: 0.5, cy: 0.92, width: 0.3, height: 0.08, detail: 36, color: '#00ccff', glow: '#44ddff' },
+                    { cx: 0.75, cy: 0.96, width: 0.2, height: 0.04, detail: 28, color: '#0099ff', glow: '#44bbff' }
+                ],
+                wireSpacing: 0.025,
+                fleeStrength: 0.2
+            }
+        ];
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function drawSun() {
+            const sunX = width * 0.5;
+            const sunY = height * 0.35;
+            const sunRadius = Math.min(width, height) * 0.15;
+            
+            ctx.save();
+            
+            // Gradiente del sol
+            const sunGradient = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunRadius * 1.5);
+            sunGradient.addColorStop(0, '#ff00ff');
+            sunGradient.addColorStop(0.3, '#ff0080');
+            sunGradient.addColorStop(0.6, '#ff4000');
+            sunGradient.addColorStop(1, 'transparent');
+            
+            // Dibujar resplandor
+            ctx.fillStyle = sunGradient;
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, sunRadius * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Líneas horizontales del sol
+            ctx.strokeStyle = '#ff00ff';
+            ctx.lineWidth = 2;
+            const lineSpacing = sunRadius * 0.1;
+            
+            for (let i = 0; i < 20; i++) {
+                const y = sunY - sunRadius + (i * lineSpacing);
+                const lineWidth = Math.sqrt(sunRadius * sunRadius - Math.pow(y - sunY, 2)) * 2;
+                
+                if (lineWidth > 0) {
+                    ctx.globalAlpha = 0.8 - (Math.abs(y - sunY) / sunRadius) * 0.3;
+                    ctx.beginPath();
+                    ctx.moveTo(sunX - lineWidth / 2, y);
+                    ctx.lineTo(sunX + lineWidth / 2, y);
+                    ctx.stroke();
+                }
+            }
+            
+            ctx.restore();
+        }
+
+        function generateMountainProfile(mountain, mouseInfluence, layerTime) {
+            const points = [];
+            const segments = mountain.detail;
+            
+            for (let i = 0; i <= segments; i++) {
+                const t = i / segments;
+                const angle = Math.PI * t;
+                
+                // Forma básica de la montaña
+                let y = Math.sin(angle);
+                
+                // Agregar ruido para detalle
+                y += 0.3 * Math.sin(angle * 4 + layerTime / 100);
+                y += 0.2 * Math.sin(angle * 8 + layerTime / 80);
+                y += 0.1 * Math.sin(angle * 16 + layerTime / 60);
+                
+                // Deformación por mouse
+                const mouseDeform = mouseInfluence * 0.3 * Math.sin(angle * 6 + layerTime / 40);
+                y -= mouseDeform;
+                
+                const x = mountain.cx * width + (t - 0.5) * mountain.width * width;
+                const yPos = mountain.cy * height - y * mountain.height * height;
+                
+                points.push({ x, y: yPos });
+            }
+            
+            return points;
+        }
+
+        function drawWireframeMountain(mountain, mouseInfluence, layerTime, wireSpacing) {
+            // Calcular huida del mouse
+            const mountainCenterX = mountain.cx * width;
+            const mountainCenterY = mountain.cy * height;
+            const dx = mouseX - mountainCenterX;
+            const dy = mouseY - mountainCenterY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const fleeRadius = Math.max(width, height) * 0.3;
+            
+            mouseInfluence = Math.max(0, 1 - dist / fleeRadius);
+            
+            // Aplicar desplazamiento por huida
+            let offsetX = 0, offsetY = 0;
+            if (mouseInfluence > 0) {
+                const fleeAngle = Math.atan2(dy, dx);
+                offsetX = -Math.cos(fleeAngle) * mouseInfluence * 50;
+                offsetY = -Math.sin(fleeAngle) * mouseInfluence * 30;
+            }
+            
+            // Generar perfil de la montaña
+            const adjustedMountain = {
+                ...mountain,
+                cx: (mountainCenterX + offsetX) / width,
+                cy: (mountainCenterY + offsetY) / height
+            };
+            
+            const profile = generateMountainProfile(adjustedMountain, mouseInfluence, layerTime);
+            
+            ctx.save();
+            
+            // Intensidad de brillo basada en proximidad del mouse
+            const glowIntensity = 1 + mouseInfluence * 2;
+            ctx.shadowColor = mountain.glow;
+            ctx.shadowBlur = 5 * glowIntensity;
+            ctx.strokeStyle = mountain.color;
+            ctx.lineWidth = 1 + mouseInfluence * 0.5;
+            
+            // Dibujar líneas de wireframe horizontales
+            const wireLines = Math.floor(mountain.height * height / (wireSpacing * height));
+            
+            for (let i = 0; i <= wireLines; i++) {
+                const yLevel = adjustedMountain.cy * height - (i / wireLines) * mountain.height * height;
+                
+                ctx.globalAlpha = 0.6 + mouseInfluence * 0.4;
+                ctx.beginPath();
+                
+                let startX = null;
+                for (const point of profile) {
+                    if (point.y <= yLevel) {
+                        if (startX === null) startX = point.x;
+                        ctx.lineTo(point.x, yLevel);
+                    } else if (startX !== null) {
+                        break;
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // Dibujar líneas verticales del wireframe
+            const verticalLines = Math.floor(mountain.width * width / (wireSpacing * width));
+            
+            for (let i = 0; i <= verticalLines; i++) {
+                const xPos = adjustedMountain.cx * width + (i / verticalLines - 0.5) * mountain.width * width;
+                
+                ctx.globalAlpha = 0.4 + mouseInfluence * 0.3;
+                ctx.beginPath();
+                
+                // Encontrar intersección con el perfil
+                let intersectionY = null;
+                for (let j = 0; j < profile.length - 1; j++) {
+                    const p1 = profile[j];
+                    const p2 = profile[j + 1];
+                    
+                    if ((p1.x <= xPos && xPos <= p2.x) || (p2.x <= xPos && xPos <= p1.x)) {
+                        const t = (xPos - p1.x) / (p2.x - p1.x);
+                        intersectionY = p1.y + t * (p2.y - p1.y);
+                        break;
+                    }
+                }
+                
+                if (intersectionY !== null) {
+                    ctx.moveTo(xPos, intersectionY);
+                    ctx.lineTo(xPos, adjustedMountain.cy * height);
+                    ctx.stroke();
+                }
+            }
+            
+            // Dibujar contorno principal
+            ctx.globalAlpha = 0.9 + mouseInfluence * 0.1;
+            ctx.lineWidth = 2 + mouseInfluence;
+            ctx.beginPath();
+            ctx.moveTo(profile[0].x, profile[0].y);
+            for (let i = 1; i < profile.length; i++) {
+                ctx.lineTo(profile[i].x, profile[i].y);
+            }
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        function drawGrid() {
+            ctx.save();
+
+            // Crear gradiente vertical de abajo a arriba
+            const gradient = ctx.createLinearGradient(0, height, 0, height * 0.7);
+            gradient.addColorStop(0, 'rgba(255,0,255,0.7)');
+            gradient.addColorStop(1, 'rgba(255,0,255,0.05)');
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 1.0;
+
+            // Líneas horizontales
+            const gridSpacing = height * 0.05;
+            for (let y = height * 0.7; y < height; y += gridSpacing) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            ctx.stroke();
+            }
+
+            // Líneas verticales con perspectiva
+            const verticalSpacing = width * 0.08;
+            for (let x = 0; x < width; x += verticalSpacing) {
+            ctx.beginPath();
+            ctx.moveTo(x, height * 0.7);
+            ctx.lineTo(x, height);
+            ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        function drawCursor() {
+            ctx.save();
+            
+            // Cursor principal
+            ctx.strokeStyle = '#00ffff';
+            ctx.fillStyle = '#00ffff';
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.8;
+            
+            // Cruz del cursor
+            ctx.beginPath();
+            ctx.moveTo(mouseX - 10, mouseY);
+            ctx.lineTo(mouseX + 10, mouseY);
+            ctx.moveTo(mouseX, mouseY - 10);
+            ctx.lineTo(mouseX, mouseY + 10);
+            ctx.stroke();
+            
+            // Círculo central
+            ctx.beginPath();
+            ctx.arc(mouseX, mouseY, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Anillo exterior animado
+            ctx.globalAlpha = 0.4;
+            ctx.beginPath();
+            ctx.arc(mouseX, mouseY, 8 + 3 * Math.sin(time / 20), 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        function animate() {
+            // Suavizar movimiento del mouse
+            mouseX = lerp(mouseX, targetMouseX, 0.08);
+            mouseY = lerp(mouseY, targetMouseY, 0.08);
+            
+            // Limpiar canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Dibujar elementos del fondo
+            drawSun();
+            drawGrid();
+            
+            // Dibujar capas de montañas
+            mountainLayers.forEach((layer, layerIndex) => {
+                layer.mountains.forEach(mountain => {
+                    drawWireframeMountain(mountain, 0, time + layerIndex * 20, layer.wireSpacing);
+                });
+            });
+            
+            // Dibujar cursor
+            drawCursor();
+            
+            time++;
+            requestAnimationFrame(animate);
+        }
+
+        function resizeCanvas() {
+            width = container.clientWidth;
+            height = container.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+
+        animate();
+    </script>
+</body>
+</html>
