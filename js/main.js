@@ -62,3 +62,146 @@ window.addEventListener('scroll', () => {
 
 // Ejecutar la función una vez al cargar para establecer el estado inicial
 updateAnimations();
+
+// Script.js
+// Se añade la lógica de la SPA y accesibilidad
+// Se respetan nombres de variables en camelCase en inglés
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Se capturan nodos clave
+  const tabsContainer = document.querySelector('[role="tablist"]');
+  const tabButtons = Array.from(tabsContainer.querySelectorAll('[role="tab"]'));
+  const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+  const navToggle = document.getElementById('navToggle');
+
+  // Se definen mapeos de hash a tab id
+  const hashMap = {
+    'about': 'tab-about',
+    'skills': 'tab-skills',
+    'web-studio': 'tab-web-studio',
+    'showreel': 'tab-showreel'
+  };
+
+  // Se obtiene la última pestaña guardada si existe
+  const lastSaved = localStorage.getItem('lastTab');
+
+  // Se asigna manejador para el toggle en móvil
+  navToggle.addEventListener('click', () => {
+    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', String(!expanded));
+    document.getElementById('primaryTabs').classList.toggle('open');
+  });
+
+  // Se inicializa estados aria y tabindex
+  tabButtons.forEach((tab, index) => {
+    tab.setAttribute('tabindex', '-1');
+    tab.addEventListener('click', onClickTab);
+    tab.addEventListener('keydown', onKeyDownTab);
+  });
+
+  // Se asegura que los paneles tengan hidden y aria oculto inicial
+  panels.forEach(panel => {
+    panel.hidden = true;
+  });
+
+  // Se determina pestaña inicial por hash, localStorage o por defecto
+  const initialTabId = getInitialTabId();
+  activateTab(document.getElementById(initialTabId), {focusPanel: false, replaceHash: true});
+
+  // Se escucha cambios de hash externa
+  window.addEventListener('hashchange', () => {
+    const newTabId = tabIdFromHash(location.hash);
+    if (newTabId) {
+      const tabEl = document.getElementById(newTabId);
+      if (tabEl) activateTab(tabEl, {focusPanel: true, pushState: false});
+    }
+  });
+
+  // Función para obtener tab id desde hash o desde almacenamiento o defecto
+  function getInitialTabId(){
+    const fromHash = tabIdFromHash(location.hash);
+    if (fromHash) return fromHash;
+    if (lastSaved && document.getElementById(lastSaved)) return lastSaved;
+    return 'tab-about';
+  }
+
+  // Función para mapear hash a tab id
+  function tabIdFromHash(hash){
+    if (!hash) return null;
+    const key = hash.replace('#','');
+    return hashMap[key] || null;
+  }
+
+  // Manejador click en tab
+  function onClickTab(e){
+    const tab = e.currentTarget;
+    activateTab(tab, {focusPanel: true});
+    // Se cierra menu movil si estaba abierto
+    document.getElementById('primaryTabs').classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+
+  // Manejador teclado en tabs
+  function onKeyDownTab(e){
+    const key = e.key;
+    const currentIndex = tabButtons.indexOf(e.currentTarget);
+    let nextIndex = null;
+
+    if (key === 'ArrowRight' || key === 'Right') {
+      nextIndex = (currentIndex + 1) % tabButtons.length;
+      tabButtons[nextIndex].focus();
+      e.preventDefault();
+    } else if (key === 'ArrowLeft' || key === 'Left') {
+      nextIndex = (currentIndex - 1 + tabButtons.length) % tabButtons.length;
+      tabButtons[nextIndex].focus();
+      e.preventDefault();
+    } else if (key === 'Home') {
+      tabButtons[0].focus();
+      e.preventDefault();
+    } else if (key === 'End') {
+      tabButtons[tabButtons.length - 1].focus();
+      e.preventDefault();
+    } else if (key === 'Enter' || key === ' ' || key === 'Spacebar') {
+      activateTab(e.currentTarget, {focusPanel: true});
+      e.preventDefault();
+    }
+  }
+
+  // Función central para activar pestaña
+  function activateTab(tabEl, options = {}){
+    const { focusPanel = true, pushState = true, replaceHash = false } = options;
+
+    // Se actualiza estado de todas las tabs
+    tabButtons.forEach(t => {
+      const selected = t === tabEl;
+      t.setAttribute('aria-selected', String(selected));
+      t.setAttribute('tabindex', selected ? '0' : '-1');
+    });
+
+    // Se muestra panel correspondiente y aplica animación
+    const targetId = tabEl.dataset.target;
+    panels.forEach(panel => {
+      if (panel.id === targetId) {
+        panel.hidden = false;
+        panel.classList.remove('fade-in');
+        // Forzar reflow para reiniciar animación
+        void panel.offsetWidth;
+        panel.classList.add('fade-in');
+        if (focusPanel) panel.focus();
+      } else {
+        panel.hidden = true;
+      }
+    });
+
+    // Se actualiza hash para permitir enlaces profundos
+    const newHash = `#${targetId}`;
+    if (pushState) {
+      if (replaceHash) history.replaceState(null, '', newHash);
+      else location.hash = targetId;
+    }
+
+    // Se guarda la última pestaña en localStorage
+    localStorage.setItem('lastTab', tabEl.id);
+  }
+
+});

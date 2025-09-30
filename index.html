@@ -34,7 +34,121 @@
         <div class="background-final" id="backgroundFinal"></div>
         <div class="profile" id="profile"><img src="./assets/img/width_600.jpeg" alt="Profile Image"></div>
         <h1 class="name">Darien Carvajal</h1>
-        <p>...</p>
+        <div class="main_div">
+            <div class="container">
+            <!-- Se añade control accesible para saltar contenido -->
+            <a class="skip-link" href="#main-content">Skip to content</a>
+
+            <!-- Se muestra la barra superior fija con las pestañas -->
+            <header class="site-header" role="banner">
+                <div class="header-inner">
+                <div class="brand" aria-hidden="true">ArtDaSak</div>
+
+                <!-- Se incluye botón hamburger para móviles -->
+                <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-controls="primaryTabs">
+                    <span class="sr-only">Toggle navigation</span>
+                    <!-- Se describe icono de hamburguesa visualmente -->
+                    <svg width="26" height="16" viewBox="0 0 26 16" aria-hidden="true" focusable="false">
+                    <rect y="0" width="26" height="2"></rect>
+                    <rect y="7" width="26" height="2"></rect>
+                    <rect y="14" width="26" height="2"></rect>
+                    </svg>
+                </button>
+
+                <!-- Se renderiza la lista de tabs con roles y atributos aria -->
+                <nav id="primaryTabs" class="tabs" role="tablist" aria-label="Main Tabs">
+                    <button id="tab-about" class="tab" role="tab" data-target="about" aria-selected="false" tabindex="-1">About Me</button>
+                    <button id="tab-skills" class="tab" role="tab" data-target="skills" aria-selected="false" tabindex="-1">Skills</button>
+                    <button id="tab-web-studio" class="tab" role="tab" data-target="web-studio" aria-selected="false" tabindex="-1">Web Studio</button>
+                    <button id="tab-showreel" class="tab" role="tab" data-target="showreel" aria-selected="false" tabindex="-1">Showreel</button>
+                </nav>
+                </div>
+            </header>
+
+            <!-- Se muestra el contenido principal -->
+            <main id="main-content" class="main" tabindex="-1">
+                <!-- Panel About Me -->
+                <section id="about" class="panel" role="tabpanel" aria-labelledby="tab-about" hidden>
+                <h1 class="panel-title">About Me</h1>
+                <p class="panel-lead">Soy una creadora nómada de código y sueños, que convierte ideas en páginas que respiran.</p>
+                <p>Se construye experiencia en front end y creatividad visual, mezclando diseño y lógica para crear proyectos con alma y propósito.</p>
+                </section>
+
+                <!-- Panel Skills -->
+                <section id="skills" class="panel" role="tabpanel" aria-labelledby="tab-skills" hidden>
+                <h1 class="panel-title">Skills</h1>
+                <ul class="skills-list">
+                    <li><strong>HTML</strong> — Estructura semántica y accesible para contenidos claros y escalables</li>
+                    <li><strong>CSS</strong> — Estilos modernos y responsive con foco en rendimiento</li>
+                    <li><strong>JavaScript</strong> — Interactividad ligera y lógica en cliente</li>
+                    <li><strong>Python</strong> — Automatización y scripting para backend y herramientas</li>
+                    <li><strong>Git</strong> — Flujo de versiones y colaboraciones con commits claros</li>
+                    <li><strong>Video Editing</strong> — Montaje y cortes para mostrar trabajo visual en showreels</li>
+                </ul>
+                </section>
+
+                <!-- Panel Web Studio -->
+                <section id="web-studio" class="panel" role="tabpanel" aria-labelledby="tab-web-studio" hidden>
+                <h1 class="panel-title">Web Studio</h1>
+                <p class="panel-lead">Proyectos que cuentan historias y cargan rápido, pensados para ser compartidos</p>
+                <div class="projects-grid">
+                    <article class="card">
+                    <h2 class="card-title">Minimal Portfolio</h2>
+                    <p class="card-desc">Sitio de presentación personal con enfoque en fotografía y texto corto</p>
+                    <a class="card-link" href="#" aria-disabled="false">Open demo</a>
+                    </article>
+                    <article class="card">
+                    <h2 class="card-title">Local Market</h2>
+                    <p class="card-desc">Micro tienda con filtros y carrito simple pensado para PWA</p>
+                    <a class="card-link" href="#" aria-disabled="false">Open demo</a>
+                    </article>
+                    <article class="card">
+                    <h2 class="card-title">Interactive CV</h2>
+                    <p class="card-desc">CV visual con secciones animadas y navegación por pestañas</p>
+                    <a class="card-link" href="#" aria-disabled="false">Open demo</a>
+                    </article>
+                </div>
+                </section>
+
+                <!-- Panel Showreel -->
+                <section id="showreel" class="panel" role="tabpanel" aria-labelledby="tab-showreel" hidden>
+                <h1 class="panel-title">Showreel</h1>
+                <p class="panel-lead">Mini presentaciones visuales para sentir el pulso creativo</p>
+                <div class="showreel-grid" aria-hidden="false">
+                    <div class="thumb" role="group" aria-label="Showreel 1">
+                    <div class="thumb-placeholder" aria-disabled="true" tabindex="0">Thumbnail 1</div>
+                    <div class="thumb-caption">Corte rápido de diseño UI</div>
+                    </div>
+                    <div class="thumb" role="group" aria-label="Showreel 2">
+                    <div class="thumb-placeholder" aria-disabled="true" tabindex="0">Thumbnail 2</div>
+                    <div class="thumb-caption">Animación de interacción</div>
+                    </div>
+                    <div class="thumb" role="group" aria-label="Showreel 3">
+                    <div class="thumb-placeholder" aria-disabled="true" tabindex="0">Thumbnail 3</div>
+                    <div class="thumb-caption">Timelapse de prototipo</div>
+                    </div>
+                </div>
+                <p class="panel-note">Los videos son placeholder para pruebas y accesibilidad</p>
+                </section>
+            </main>
+
+            <script src="Script.js" defer></script>
+        </div>
+        </div>
+        <div class="social-links">
+            <a href=""  target="_blank" rel="noopener noreferrer">
+                <img src="./assets/github.svg" alt="GitHub">
+            </a>
+            <a href="" target="_blank" rel="noopener noreferrer">
+                <img src="./assets/linkedin.svg" alt="LinkedIn">
+            </a>
+            <a href="" target="_blank" rel="noopener noreferrer">
+                <img src="./assets/twitter.svg" alt="Twitter">
+            </a>
+            <a href="mailto:darien@gmail.com" target="_blank" rel="noopener noreferrer">
+                <img src="./assets/email.svg" alt="Email">
+            </a>
+        </div>
     </section>
     <script src="./js/main.js"></script>
 </body>
