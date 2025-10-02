@@ -1,0 +1,49 @@
+/* =========================
+    VARIABLES
+   ========================= */
+:root {
+  /* Base colors */
+  --bg: #f7f9fc;
+  --card: #fff;
+  --muted: #6c757d;
+  --accent: #6c5ce7;
+  --accent-weak: #e0e7ff;
+  --text: #22223b;
+  --glass: rgba(255,255,255,0.6);
+  --radius: 16px;
+  --gap: 16px;
+  font-size: 16px;
+
+  /* Tunnel colors */
+  --color-bg-tunnel: #0A0A0A;
+  --color-ring-cyan: #00FFFF;
+  --color-ring-magenta: #FF00FF;
+  --color-ring-purple: #9223FE;
+  --color-text-main: #EBEBFF;
+  --color-profile-bg: #111;
+  --color-main-div-bg: rgba(10,10,20,0.7);
+  --color-main-div-shadow-cyan: #00FFFF44;
+  --color-main-div-shadow-magenta: #FF00FF22;
+  --color-shadow-cyan: #00FFFF;
+  --color-shadow-magenta: #FF00FF;
+  --color-shadow-cyan-weak: #00FFFF44;
+  --color-shadow-magenta-weak: #FF00FF22;
+
+  /* Portfolio Modern Page */
+  --color-header-bg1: rgba(255,255,255,0.85);
+  --color-header-bg2: rgba(255,255,255,0.75);
+  --color-header-border: rgba(15,23,42,0.04);
+  --color-panel-bg1: rgba(255,255,255,0.9);
+  --color-panel-bg2: rgba(255,255,255,0.95);
+  --color-panel-shadow: rgba(15,23,42,0.04);
+  --color-card-shadow: rgba(12,20,45,0.04);
+  --color-thumb-bg1: #f3f4f6;
+  --color-thumb-bg2: #eef2ff;
+  --color-thumb-border: rgba(16,24,40,0.06);
+  --color-tab-outline: rgba(108,92,231,0.12);
+  --color-tab-bg: var(--accent-weak, #e0e7ff);
+  --color-tab-shadow: rgba(108,92,231,0.08);
+  --color-tab-underline: var(--accent, #6c5ce7);
+  --color-skip-link-bg: #111;
+  --color-skip-link-text: #fff;
+}
