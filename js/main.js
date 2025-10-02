@@ -72,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabsContainer = document.querySelector('[role="tablist"]');
   const tabButtons = Array.from(tabsContainer.querySelectorAll('[role="tab"]'));
   const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
-  const navToggle = document.getElementById('navToggle');
 
   // Se definen mapeos de hash a tab id
   const hashMap = {
@@ -84,13 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Se obtiene la última pestaña guardada si existe
   const lastSaved = localStorage.getItem('lastTab');
-
-  // Se asigna manejador para el toggle en móvil
-  navToggle.addEventListener('click', () => {
-    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-    navToggle.setAttribute('aria-expanded', String(!expanded));
-    document.getElementById('primaryTabs').classList.toggle('open');
-  });
 
   // Se inicializa estados aria y tabindex
   tabButtons.forEach((tab, index) => {
@@ -136,9 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function onClickTab(e){
     const tab = e.currentTarget;
     activateTab(tab, {focusPanel: true});
-    // Se cierra menu movil si estaba abierto
-    document.getElementById('primaryTabs').classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
   }
 
   // Manejador teclado en tabs
